@@ -1,0 +1,155 @@
+/**
+ *
+ * @author John Abueg
+ */
+//import java.util.Collections;
+//import java.util.ArrayList;
+
+public class Calculator {
+   
+    //find and return smallest grade in array
+    public static double minimum(ArrayList<Double> grades){
+        double min = 100;
+ 
+	for (int i = 0; i < grades.size() - 1; i++){
+			if (grades.get(i) < min) {min = grades.get(i);}
+        }
+		return min;
+    }
+    
+	//find and return largest grade in array
+    public static double maximum(ArrayList<Double> grades){
+        double max = 0;
+		for (int i = 0; i < grades.size() - 1; i++){
+			if (grades.get(i) > max) {max = grades.get(i);}
+        }
+		return max;
+    }
+    
+	//find median average
+    public static double median(ArrayList<Double> grades, ArrayList<Double> weight){
+        ArrayList<Double> medianList = new ArrayList<>();
+
+		for (int i = 0; i < grades.size() - 1; i++){
+			//add grade x times to medianList, where x is weight greater than 1
+			if (weight.get(i) != 1){
+				double x = weight.get(i);
+				for (int j = 0; i < (x - 1); j++){
+					medianList.add(grades.get(i));
+				}
+			}
+			else medianList.add(grades.get(i));
+		}
+		
+		Collections.sort(medianList); //sort medianList
+		
+		//determine if medianList size is even or odd, then find median
+		if (medianList.size() % 2 == 0){ //even
+			int y = medianList.size() - 1;
+			int z = medianList.size();
+			return ((medianList.get(y) + medianList.get(z)) / 2);
+		}
+		else { //odd
+			int y = (medianList.size() + 1) / 2;
+			return medianList.get(y);
+                }
+    }
+    
+	//find mean average
+    public static double mean(ArrayList<Double> grades, ArrayList<Double> weight){
+		double total = 0;
+		double weightTotal = 0;
+		
+		for (int i = 0; i < grades.size() - 1; i++){
+			total += (grades.get(i) * weight.get(i));
+			weightTotal += weight.get(i);
+		}
+		
+		return (total / weightTotal);
+    }
+    
+    //find standard deviation
+    public static double stdDev(ArrayList<Double> grades, ArrayList<Double> weight){
+        double stDevTotal = 0;
+		double meanAverage;
+                
+                //holds all grades for standard deviation calculations
+		ArrayList<Double> devList = new ArrayList<>(); 
+		
+		meanAverage = mean(grades, weight);
+		
+		for (int i = 0; i < grades.size() - 1; i++){ //populate devList
+			//add grade x times to devList, where x is weight greater than 1
+			if (weight.get(i) != 1){
+				double x = weight.get(i);
+				for (int j = 0; i < x - 1; j++){
+					devList.add(grades.get(i));
+				}
+			}
+			else devList.add(grades.get(i));
+		}
+		
+		//for each value in devList, subtract mean and square result
+		//then replace value with result
+		for (int i = 0; i < devList.size() - 1; i++){
+			double tempResult = Math.pow(devList.get(i) - meanAverage, 2);
+			devList.add(tempResult);
+		}
+		
+		//find standard deviation
+		for (int i = 0; i < devList.size() - 1; i++) {  
+			stDevTotal += devList.get(i);
+		}
+		return (stDevTotal / devList.size());	
+    }       
+    
+    //find "what-if" grade and weight
+    public static double[] whatIf(ArrayList<Double> grades, 
+            ArrayList<Double> weight, int whatIfValue) {
+        
+        ArrayList<Double> gradeList = new ArrayList<>();
+        ArrayList<Double> weightList = new ArrayList<>();
+        Collections.copy(gradeList, grades);
+	Collections.copy(weightList, weight);
+		//double oldMeanAverage;
+		double newMeanAverage;
+		double targetAverage;
+		int numAddedValues = 0; //counts number (weight) of added grades
+		int target;
+		
+		target = whatIfValue;
+		//oldMeanAverage = mean(gradeList, weightList); //get actual mean avg
+		
+		do { //repeats until "what if" is met/exceeded
+			gradeList.add(100.0);
+			weightList.add(1.0);
+			numAddedValues += 1;
+			newMeanAverage = mean(gradeList, weightList); //get new mean avg
+		} while (newMeanAverage < target);
+		
+		//loop to "fine tune" last grade submitted
+		double tempGrade = 100;
+		double tempMeanAverage; //holds mean value for do-while loop		
+		do { //repeats until "what if" is higher than mean avg				
+			tempGrade -= 1;
+			gradeList.set(gradeList.size() - 1, tempGrade);
+			tempMeanAverage = mean(gradeList, weightList);
+		} while (tempMeanAverage > target);
+
+		//Here we take the total of all added values to gradeList
+		//and add them together. If more than one value was added all 
+		//values EXCEPT for the last value are 100, the last is the
+		//tempGrade.  Total is then divided by numAddedValues to get 
+		//the score and weight needed to achieve "what if" grade.
+		tempGrade = tempGrade + ((numAddedValues - 1) * 100);
+		targetAverage = tempGrade / numAddedValues;
+		
+		//place values in array
+		double[] whatIfNumbers = new double[2];
+		whatIfNumbers[0] = targetAverage; //first array value set to score
+		whatIfNumbers[1] = numAddedValues; //second array value set to weight
+		
+		return whatIfNumbers; //use array to get "what-if" numbers
+    }  
+}  
+
