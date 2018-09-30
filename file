@@ -1,27 +1,18 @@
-import java.io.DataOutputStream;
-import java.io.FileOutputStream;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
-import java.util.ArrayList;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
-public class File {
-    @SuppressWarnings("ConvertToTryWithResources")
-    public void write(ArrayList<Double>grades, ArrayList<Double>weight){
-        JFileChooser jfc = new JFileChooser(".");
-        FileNameExtensionFilter filter = new FileNameExtensionFilter("dat","DAT");
-        jfc.setFileFilter((javax.swing.filechooser.FileFilter) filter);
-        java.io.File file = jfc.getSelectedFile();
+
+public class File{
+    File name;
+    public void inputFile(File fileName){
+        name = fileName;
+    }
+    public void write(String text){
         try{
-            DataOutputStream dos = new DataOutputStream(new FileOutputStream(file));
-            for(Double grd : grades){
-                dos.writeDouble(grd);
-            }
-            for(Double wght : weight){
-                dos.writeDouble(wght);
-            }
-            dos.close();
+            BufferedWriter writer = new BufferedWriter(new FileWriter(name + ""));
+            writer.append(text);
         }catch(IOException e){
             showError(e.toString(), "Error");
         }
