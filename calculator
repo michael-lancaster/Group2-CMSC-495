@@ -34,8 +34,8 @@ class Calculator {
 		
 		//determine if medianList size is even or odd, then find median
 		if (medianList.size() % 2 == 0){ //even
-			int y = medianList.size() - 1;
-			int z = medianList.size();
+			int y = medianList.size() - 2;
+			int z = medianList.size() - 1;
 			return ((medianList.get(y) + medianList.get(z)) / 2);
 		}
 		else { //odd
