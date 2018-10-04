@@ -1,0 +1,145 @@
+import java.awt.Dimension;
+import java.io.BufferedWriter;
+import javax.swing.JFileChooser;
+import javax.swing.JScrollPane;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+public class GUI extends javax.swing.JFrame {
+
+	// Initiates variables
+	private static final long serialVersionUID = 1L;
+	private javax.swing.JButton inputFileChooser;
+	private javax.swing.JButton outputFileChooser;
+	private javax.swing.JTextArea textArea;
+	private JScrollPane vbarRight;
+	private BufferedWriter outWriter;
+
+	public GUI() {
+		
+		inputFileChooser = new javax.swing.JButton();
+		outputFileChooser = new javax.swing.JButton();
+
+		textArea = new javax.swing.JTextArea(0, 0);
+		vbarRight = new javax.swing.JScrollPane(textArea);
+		vbarRight.setBounds(12, 20, 715, 220);
+
+		setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+		addWindowListener(new java.awt.event.WindowAdapter() {
+			public void windowClosing(java.awt.event.WindowEvent close) {
+				formWindowClosing(close);
+			}
+		});
+
+		inputFileChooser.setText("Input File");
+		inputFileChooser.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent input) {
+				inputFile(input);
+			}
+		});
+
+		outputFileChooser.setText("Output File");
+		outputFileChooser.addActionListener(new java.awt.event.ActionListener() {
+			public void actionPerformed(java.awt.event.ActionEvent output) {
+				outputFile(output);
+			}
+		});
+
+		setTitle("GPA Calculator");
+		setPreferredSize(new Dimension(775, 400));
+		setLayout(null);
+		// add buttons and textArea
+		add(vbarRight);
+		add(inputFileChooser);
+		add(outputFileChooser);
+
+		// set button layout.
+		inputFileChooser.setBounds(20, 270, 85, 25);
+		outputFileChooser.setBounds(110, 270, 95, 25);
+		pack();
+		
+		setLocationRelativeTo(null);
+		
+	}
+
+	private void inputFile(java.awt.event.ActionEvent evt) {
+
+		JFileChooser chooser = new JFileChooser();
+		chooser.setDialogTitle("Please Load file.");
+		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Dat Files", "dat"));
+		int result = chooser.showOpenDialog(null);
+
+		if (result == JFileChooser.APPROVE_OPTION) {
+
+			try {
+
+				Input input = new Input(chooser.getSelectedFile().getCanonicalPath());
+				input.readFile();
+
+				if (!(input.getAssignmentNameList().isEmpty() || input.getGradeList().isEmpty()
+						|| input.getWeightList().isEmpty())) {
+					textArea.append("*** " + input.getFile().getName() + " ***" + System.getProperty("line.separator") + System.getProperty("line.separator"));
+					textArea.append("Maximum: " + Calculator.maximum(input.getGradeList()) + System.getProperty("line.separator"));
+					textArea.append("Minimum: " + Calculator.minimum(input.getGradeList()) + System.getProperty("line.separator"));
+					textArea.append("Mean: " + Calculator.mean(input.getGradeList(), input.getWeightList()) + System.getProperty("line.separator"));
+					textArea.append("Median: " + Calculator.median(input.getGradeList()) + System.getProperty("line.separator"));
+					textArea.append("Standard Deviation: "
+							+ Calculator.stdDev(input.getGradeList(), input.getWeightList()) + System.getProperty("line.separator"));
+				}
+
+			} catch (Exception exception) {
+				System.out.println("Input Exception.");
+			}
+		}
+
+	}
+
+	private void outputFile(java.awt.event.ActionEvent evt) {
+
+		JFileChooser chooser = new JFileChooser();
+		// set window name
+		chooser.setDialogTitle("Write file.");
+		chooser.addChoosableFileFilter(new FileNameExtensionFilter("Dat Files", "dat"));
+		int result = chooser.showOpenDialog(null);
+		
+		if (result == JFileChooser.APPROVE_OPTION) {
+			Output output = new Output();
+			output.inputFile(chooser.getSelectedFile());
+			output.write(textArea.getText());
+		}
+
+	}
+
+	private void formWindowClosing(java.awt.event.WindowEvent evt) {
+		try {
+			outWriter.write(textArea.getText());
+			outWriter.close();
+		} catch (Exception e) {
+		}
+	}
+
+	public static void main(String args[]) {
+		try {
+			for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					javax.swing.UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (ClassNotFoundException ex) {
+
+		} catch (InstantiationException ex) {
+
+		} catch (IllegalAccessException ex) {
+
+		} catch (javax.swing.UnsupportedLookAndFeelException ex) {
+
+		}
+
+		/* Create and display the form */
+		java.awt.EventQueue.invokeLater(new Runnable() {
+			public void run() {
+				new GUI().setVisible(true);
+			}
+		});
+	}
+}
