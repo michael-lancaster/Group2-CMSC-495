@@ -56,6 +56,36 @@ class Calculator {
 		return (total / weightTotal);
     }
     
+    //find letter grade
+    public static char letterGrade(ArrayList<Double> grades, ArrayList<Double> weight){
+        double meanAverage;
+
+        meanAverage = mean(grades, weight);
+        char letter;
+		
+        switch((int) meanAverage / 10) {
+            case 10:
+                letter = 'A';
+                break;
+            case 9:
+                letter = 'A';
+                break;
+            case 8:
+                letter = 'B';
+                break;
+            case 7:
+                letter = 'C';
+                break;
+            case 6:
+                letter = 'D';
+                break;
+            default:
+                letter = 'F';
+                break;
+        }
+        return letter;
+    }
+    
     //find standard deviation
     public static double stdDev(ArrayList<Double> grades, ArrayList<Double> weight){
         double stDevTotal = 0;
@@ -173,6 +203,7 @@ public class DriverCode {
 		  System.out.println("Max: " + Calculator.maximum(gList));
 		  System.out.println("Median: " + Calculator.median(gList));
 		  System.out.println("Mean: " + Calculator.mean(gList,wList));
+		  System.out.println("Letter Grade: " + Calculator2.letterGrade(gList,wList));
 		  System.out.println("Standard Deviation: " + Calculator.stdDev(gList, wList));
 		  
 		  double[] results = Calculator.whatIf(gList, wList, 90);
