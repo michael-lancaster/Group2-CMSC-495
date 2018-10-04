@@ -1,0 +1,129 @@
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Scanner;
+import java.util.regex.Pattern;
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
+public class Input {
+
+	private File file;
+	private ArrayList<String> assignmentNameList = new ArrayList<>();
+	private ArrayList<Double> gradeList = new ArrayList<>();
+	private ArrayList<Double> weightList = new ArrayList<>();
+
+	public Input(String filePath) {
+		file = new File(filePath);
+	}
+
+	public void readFile() {
+
+		try {
+
+			verifyExtension();
+
+			Scanner input = new Scanner(file);
+
+			String text = "";
+
+			while (input.hasNext()) {
+				text += input.next() + " ";
+			}
+
+			input.close();
+
+			String[] words = text.split("\\s+");
+
+			for (int i = 0; i < words.length; i++) {
+
+				if (words[i].equalsIgnoreCase("Assignment") && words[i + 1].equalsIgnoreCase("Name:")) {
+					if (words[i + 2].equalsIgnoreCase("Weight:")) {
+						assignmentNameList.add("-");
+						i += 1;
+					} else if (containSpecialCharacters(words[i + 2])) {
+						throw new Exception(
+								"Must only enter numbers and letters for assigment name. Special characters are not allowed.");
+					} else if (words[i + 2].equalsIgnoreCase("Grade:")) {
+						throw new Exception("Invalid Format. 1");
+					} else {
+						assignmentNameList.add(words[i + 2]);
+						i += 2;
+					}
+				} else if (words[i].equalsIgnoreCase("Weight:")) {
+					if (words[i + 1].equalsIgnoreCase("Grade:")) {
+						weightList.add(0.0);
+					} else if (numericValue(words[i + 1])) {
+						weightList.add(Double.parseDouble(words[i + 1]));
+						i += 1;
+					} else {
+						throw new Exception("Invalid Format. 2");
+					}
+				} else if (words[i].equalsIgnoreCase("Grade:")) {
+					if (words[i + 1].equalsIgnoreCase("Assignment") && words[i + 2].equalsIgnoreCase("Name:")) {
+						gradeList.add(0.0);
+					} else if (numericValue(words[i + 1])) {
+						gradeList.add(Double.parseDouble(words[i + 1]));
+						i += 1;
+					} else if (words[i].equalsIgnoreCase("A") || words[i].equalsIgnoreCase("B")
+							|| words[i].equalsIgnoreCase("C") || words[i].equalsIgnoreCase("D")
+							|| words[i].equalsIgnoreCase("F")) {
+						gradeList.add(Double.parseDouble(words[i]));
+					} else {
+						throw new Exception("Must only enter numbers for a grade.");
+					}
+				} else {
+					throw new Exception("Invalid Format. 3");
+				}
+			}
+
+		} catch (Exception exception) {
+			displayMessageDialog(exception.getMessage());
+		}
+
+	}
+
+	public File getFile() {
+		return file;
+	}
+
+	public ArrayList<String> getAssignmentNameList() {
+		return assignmentNameList;
+	}
+
+	public ArrayList<Double> getGradeList() {
+		return gradeList;
+	}
+
+	public ArrayList<Double> getWeightList() {
+		return weightList;
+	}
+
+	public void verifyExtension() throws Exception {
+		if (!((file.getPath().lastIndexOf('.') != -1) && (file.getPath()
+				.substring((file.getPath().lastIndexOf('.') + 1), file.getPath().length()).equalsIgnoreCase("dat")))) {
+			throw new Exception("Invalid extension, please enter a new dat file.");
+		}
+	}
+
+	public boolean containSpecialCharacters(String assigmentName) throws Exception {
+		if (Pattern.compile("[^A-Za-z0-9]").matcher(assigmentName).find()) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean numericValue(String value) {
+		try {
+			Double.parseDouble(value);
+		} catch (Exception exception) {
+			return false;
+		}
+		return true;
+	}
+
+	private static void displayMessageDialog(String message) {
+		JFrame frame = new JFrame();
+		JOptionPane.showMessageDialog(frame, message, "Input - Error", JOptionPane.INFORMATION_MESSAGE);
+	}
+
+}
